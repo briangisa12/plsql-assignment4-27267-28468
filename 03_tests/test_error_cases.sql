@@ -161,3 +161,33 @@ END;
 
 PROMPT ===== E18: Error is NOT hidden when the function is used in SQL (expect ORA-20013, not NULL) =====
 SELECT f_stock_value(999) AS stock_value FROM dual;
+
+PROMPT ===== E19: A failed movement leaves no partial changes - ROLLBACK check =====
+DECLARE
+    v_qty_before   products.qty_in_stock%TYPE;
+    v_qty_after    products.qty_in_stock%TYPE;
+    v_moves_before PLS_INTEGER;
+    v_moves_after  PLS_INTEGER;
+    v_new_qty      products.qty_in_stock%TYPE;
+BEGIN
+    SELECT qty_in_stock INTO v_qty_before FROM products WHERE product_id = 6;
+    SELECT COUNT(*) INTO v_moves_before FROM stock_movements WHERE product_id = 6;
+
+    BEGIN
+        p_record_stock_movement(6, 'OUT', 50, 'Should fail', v_new_qty);
+    EXCEPTION
+        WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+    END;
+
+    SELECT qty_in_stock INTO v_qty_after FROM products WHERE product_id = 6;
+    SELECT COUNT(*) INTO v_moves_after FROM stock_movements WHERE product_id = 6;
+
+    DBMS_OUTPUT.PUT_LINE('Stock before: ' || v_qty_before || ' | after: ' || v_qty_after);
+    DBMS_OUTPUT.PUT_LINE('Movements before: ' || v_moves_before || ' | after: ' || v_moves_after);
+    IF v_qty_before = v_qty_after AND v_moves_before = v_moves_after THEN
+        DBMS_OUTPUT.PUT_LINE('PASS: nothing was changed by the failed call.');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('FAIL: the failed call left partial changes.');
+    END IF;
+END;
+/
