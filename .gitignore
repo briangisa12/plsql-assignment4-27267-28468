@@ -1,0 +1,14 @@
+# SQL Developer / SQL*Plus generated files
+*.log
+*.lst
+*.bak
+*.tmp
+*.sql~
+.sqldeveloper/
+
+# Editors and OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
