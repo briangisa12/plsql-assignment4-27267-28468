@@ -1,80 +1,29 @@
 SET SERVEROUTPUT ON;
-CREATE OR REPLACE PROCEDURE p_record_stock_movement (
-    p_product_id    IN  products.product_id%TYPE,
-    p_movement_type IN  stock_movements.movement_type%TYPE,
-    p_quantity      IN  stock_movements.quantity%TYPE,
-    p_note          IN  stock_movements.note%TYPE,
-    p_new_qty       OUT products.qty_in_stock%TYPE
-) AS
-   
-    e_invalid_quantity   EXCEPTION;
-    e_invalid_type       EXCEPTION;
-    e_insufficient_stock EXCEPTION;
+INSERT INTO suppliers (supplier_name, phone, email) VALUES ('Kigali Tech Supplies', '0788000001', 'sales@kts.rw');
+INSERT INTO suppliers (supplier_name, phone, email) VALUES ('Rwanda Office Mart',   '0788000002', 'info@rom.rw');
+INSERT INTO suppliers (supplier_name, phone, email) VALUES ('EastAfrica Electronics','0788000003', 'hello@eae.rw');
+INSERT INTO suppliers (supplier_name, phone, email) VALUES ('Unused Supplier Ltd',  '0788000004', 'x@unused.rw');
 
-    v_type        stock_movements.movement_type%TYPE;
-    v_current_qty products.qty_in_stock%TYPE;
-    v_change      NUMBER;
-BEGIN
-   
-    IF p_quantity IS NULL OR p_quantity <= 0 THEN
-        RAISE e_invalid_quantity;
-    END IF;
+INSERT INTO products (product_name, category, supplier_id, unit_price, qty_in_stock, reorder_level)
+SELECT 'USB Cable', 'ELECTRONICS', supplier_id, 3500, 120, 20 FROM suppliers WHERE supplier_name='Kigali Tech Supplies';
+INSERT INTO products (product_name, category, supplier_id, unit_price, qty_in_stock, reorder_level)
+SELECT 'USB Cable', 'ELECTRONICS', supplier_id, 3000, 60, 20 FROM suppliers WHERE supplier_name='EastAfrica Electronics'; 
+INSERT INTO products (product_name, category, supplier_id, unit_price, qty_in_stock, reorder_level)
+SELECT 'Wireless Mouse', 'ELECTRONICS', supplier_id, 12000, 8, 10 FROM suppliers WHERE supplier_name='Kigali Tech Supplies';  
+INSERT INTO products (product_name, category, supplier_id, unit_price, qty_in_stock, reorder_level)
+SELECT 'Keyboard', 'ELECTRONICS', supplier_id, 15000, 25, 10 FROM suppliers WHERE supplier_name='EastAfrica Electronics';
+INSERT INTO products (product_name, category, supplier_id, unit_price, qty_in_stock, reorder_level)
+SELECT 'A4 Paper Ream', 'STATIONERY', supplier_id, 6500, 200, 50 FROM suppliers WHERE supplier_name='Rwanda Office Mart';
+INSERT INTO products (product_name, category, supplier_id, unit_price, qty_in_stock, reorder_level)
+SELECT 'Blue Pen (Box)', 'STATIONERY', supplier_id, 4000, 5, 15 FROM suppliers WHERE supplier_name='Rwanda Office Mart';   
+INSERT INTO products (product_name, category, supplier_id, unit_price, qty_in_stock, reorder_level)
+SELECT 'Stapler', 'STATIONERY', supplier_id, 5500, 30, 10 FROM suppliers WHERE supplier_name='Rwanda Office Mart';
+INSERT INTO products (product_name, category, supplier_id, unit_price, qty_in_stock, reorder_level)
+SELECT 'HDMI Cable', 'ELECTRONICS', supplier_id, 7000, 40, 10 FROM suppliers WHERE supplier_name='EastAfrica Electronics';
 
-    IF p_movement_type IS NULL OR UPPER(TRIM(p_movement_type)) NOT IN ('IN', 'OUT') THEN
-        RAISE e_invalid_type;
-    END IF;
-    v_type := UPPER(TRIM(p_movement_type));
+INSERT INTO stock_movements (product_id, movement_type, quantity, note)
+SELECT product_id, 'IN', 50, 'Initial delivery' FROM products WHERE product_name='Keyboard';
+INSERT INTO stock_movements (product_id, movement_type, quantity, note)
+SELECT product_id, 'OUT', 10, 'Sold to AUCA ICT lab' FROM products WHERE product_name='A4 Paper Ream';
 
-   
-    SELECT qty_in_stock
-    INTO   v_current_qty
-    FROM   products
-    WHERE  product_id = p_product_id
-    FOR UPDATE;
-
-   
-    IF v_type = 'OUT' AND p_quantity > v_current_qty THEN
-        RAISE e_insufficient_stock;
-    END IF;
-
-    v_change := CASE v_type WHEN 'IN' THEN p_quantity ELSE -p_quantity END;
-
-    UPDATE products
-    SET    qty_in_stock = qty_in_stock + v_change
-    WHERE  product_id = p_product_id
-    RETURNING qty_in_stock INTO p_new_qty;
-
-    DBMS_OUTPUT.PUT_LINE('UPDATE affected ' || SQL%ROWCOUNT || ' row(s) in PRODUCTS.');
-
-
-    INSERT INTO stock_movements (product_id, movement_type, quantity, note)
-    VALUES (p_product_id, v_type, p_quantity, p_note);
-
-    IF SQL%FOUND THEN
-        DBMS_OUTPUT.PUT_LINE('INSERT recorded ' || SQL%ROWCOUNT || ' row(s) in STOCK_MOVEMENTS.');
-    END IF;
-
-    COMMIT;
-
-EXCEPTION
-    WHEN e_invalid_quantity THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20001, 'Quantity must be a positive number. Given: '
-                                        || NVL(TO_CHAR(p_quantity), 'NULL'));
-    WHEN e_invalid_type THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20002, 'Movement type must be IN or OUT. Given: '
-                                        || NVL(p_movement_type, 'NULL'));
-    WHEN NO_DATA_FOUND THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20003, 'Product ' || p_product_id || ' does not exist.');
-    WHEN e_insufficient_stock THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20004, 'Not enough stock for product ' || p_product_id
-                                        || '. Available: ' || v_current_qty
-                                        || ', requested: ' || p_quantity || '.');
-    WHEN OTHERS THEN
-        ROLLBACK;
-        RAISE;  
-END p_record_stock_movement;
-/
+COMMIT;
