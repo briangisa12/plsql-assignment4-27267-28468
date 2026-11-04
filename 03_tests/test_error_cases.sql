@@ -54,3 +54,24 @@ EXCEPTION
     WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
 END;
 /
+
+
+PROMPT ===== E7: Product ID not found - NO_DATA_FOUND (expect ORA-20008) =====
+DECLARE
+    v_name VARCHAR2(100); v_supp VARCHAR2(100); v_value NUMBER; v_status VARCHAR2(20);
+BEGIN
+    p_get_product_details(999, v_name, v_supp, v_value, v_status);
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/
+
+PROMPT ===== E8: Invalid product ID (expect ORA-20007) =====
+DECLARE
+    v_name VARCHAR2(100); v_supp VARCHAR2(100); v_value NUMBER; v_status VARCHAR2(20);
+BEGIN
+    p_get_product_details(-1, v_name, v_supp, v_value, v_status);
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/

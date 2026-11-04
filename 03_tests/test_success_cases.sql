@@ -34,3 +34,19 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Rows deleted: ' || v_rows_deleted);
 END;
 /
+
+
+PROMPT ===== S4: Product details using %ROWTYPE records (product 6 - Blue Pen) =====
+DECLARE
+    v_name   products.product_name%TYPE;
+    v_supp   suppliers.supplier_name%TYPE;
+    v_value  NUMBER;
+    v_status VARCHAR2(20);
+BEGIN
+    p_get_product_details(6, v_name, v_supp, v_value, v_status);
+    DBMS_OUTPUT.PUT_LINE('Product     : ' || v_name);
+    DBMS_OUTPUT.PUT_LINE('Supplier    : ' || v_supp);
+    DBMS_OUTPUT.PUT_LINE('Stock value : ' || v_value || ' RWF');
+    DBMS_OUTPUT.PUT_LINE('Status      : ' || v_status);
+END;
+/
