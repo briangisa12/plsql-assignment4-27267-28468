@@ -75,3 +75,22 @@ EXCEPTION
     WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
 END;
 /
+
+
+PROMPT ===== E9: Report for a supplier that does not exist (expect ORA-20009) =====
+DECLARE v_total NUMBER; v_low NUMBER;
+BEGIN
+    p_supplier_stock_report(999, v_total, v_low);
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/
+
+PROMPT ===== E10: Report for a supplier with no products (expect ORA-20010) =====
+DECLARE v_total NUMBER; v_low NUMBER;
+BEGIN
+    p_supplier_stock_report(4, v_total, v_low);
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/

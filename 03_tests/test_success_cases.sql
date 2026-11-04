@@ -50,3 +50,15 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Status      : ' || v_status);
 END;
 /
+
+
+PROMPT ===== S5: Supplier stock report - explicit cursors, user-defined record, VARRAY (supplier 2) =====
+DECLARE
+    v_total NUMBER;
+    v_low   NUMBER;
+BEGIN
+    p_supplier_stock_report(2, v_total, v_low);
+    DBMS_OUTPUT.PUT_LINE('Returned OUT values -> total value: ' || v_total
+                         || ' RWF, low-stock products: ' || v_low);
+END;
+/
