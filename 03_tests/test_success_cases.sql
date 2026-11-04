@@ -79,3 +79,30 @@ SELECT l.log_id, p.product_name, l.old_price, l.new_price
 FROM   price_change_log l
 JOIN   products p ON p.product_id = l.product_id
 ORDER  BY l.log_id;
+
+
+
+PROMPT ===== S7: Functions called from an anonymous PL/SQL block =====
+DECLARE
+    v_low t_name_list;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Stock value of product 6      : ' || f_stock_value(6) || ' RWF');
+    DBMS_OUTPUT.PUT_LINE('ID of "Keyboard"              : ' || f_find_product_id('Keyboard'));
+    DBMS_OUTPUT.PUT_LINE('ID of "USB Cable" supplier 3  : ' || f_find_product_id('USB Cable', 3));
+
+    v_low := f_low_stock_products;
+    DBMS_OUTPUT.PUT_LINE('Low-stock products: ' || v_low.COUNT);
+    FOR i IN 1 .. v_low.COUNT LOOP
+        DBMS_OUTPUT.PUT_LINE('  - ' || v_low(i));
+    END LOOP;
+END;
+/
+
+PROMPT ===== S8: Function called from a SQL SELECT statement =====
+SELECT product_id, product_name, f_stock_value(product_id) AS stock_value
+FROM   products
+ORDER  BY product_id;
+
+PROMPT ===== S9: Function returning a nested table, used with TABLE() in SQL =====
+SELECT column_value AS low_stock_product
+FROM   TABLE(f_low_stock_products('STATIONERY'));

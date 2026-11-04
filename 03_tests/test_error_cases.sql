@@ -123,3 +123,41 @@ EXCEPTION
     WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
 END;
 /
+
+
+PROMPT ===== E14: Stock value of a missing product - NO_DATA_FOUND (expect ORA-20013) =====
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(f_stock_value(999));
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/
+
+PROMPT ===== E15: Product name used by two suppliers - TOO_MANY_ROWS (expect ORA-20015) =====
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(f_find_product_id('USB Cable'));
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/
+
+PROMPT ===== E16: Product name that does not exist (expect ORA-20014) =====
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(f_find_product_id('Laptop'));
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/
+
+PROMPT ===== E17: Unknown category (expect ORA-20016) =====
+DECLARE
+    v_low t_name_list;
+BEGIN
+    v_low := f_low_stock_products('FURNITURE');
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/
+
+PROMPT ===== E18: Error is NOT hidden when the function is used in SQL (expect ORA-20013, not NULL) =====
+SELECT f_stock_value(999) AS stock_value FROM dual;
