@@ -94,3 +94,32 @@ EXCEPTION
     WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
 END;
 /
+
+
+PROMPT ===== E11: Bulk DML errors - FORALL SAVE EXCEPTIONS (STATIONERY -5000, Blue Pen would become negative) =====
+DECLARE
+    v_updated PLS_INTEGER;
+    v_failed  PLS_INTEGER;
+BEGIN
+    p_bulk_price_adjust('STATIONERY', -5000, v_updated, v_failed);
+    DBMS_OUTPUT.PUT_LINE('Updated: ' || v_updated || ' | Failed: ' || v_failed);
+END;
+/
+
+PROMPT ===== E12: Invalid amount (expect ORA-20011) =====
+DECLARE v_updated PLS_INTEGER; v_failed PLS_INTEGER;
+BEGIN
+    p_bulk_price_adjust('ELECTRONICS', 0, v_updated, v_failed);
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/
+
+PROMPT ===== E13: Category with no products (expect ORA-20012) =====
+DECLARE v_updated PLS_INTEGER; v_failed PLS_INTEGER;
+BEGIN
+    p_bulk_price_adjust('FURNITURE', 100, v_updated, v_failed);
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/

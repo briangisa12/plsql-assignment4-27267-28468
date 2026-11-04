@@ -62,3 +62,20 @@ BEGIN
                          || ' RWF, low-stock products: ' || v_low);
 END;
 /
+
+
+PROMPT ===== S6: Bulk price increase - BULK COLLECT + FORALL (ELECTRONICS +500) =====
+DECLARE
+    v_updated PLS_INTEGER;
+    v_failed  PLS_INTEGER;
+BEGIN
+    p_bulk_price_adjust('ELECTRONICS', 500, v_updated, v_failed);
+    DBMS_OUTPUT.PUT_LINE('Updated: ' || v_updated || ' | Failed: ' || v_failed);
+END;
+/
+
+PROMPT ===== Price change log after S6 =====
+SELECT l.log_id, p.product_name, l.old_price, l.new_price
+FROM   price_change_log l
+JOIN   products p ON p.product_id = l.product_id
+ORDER  BY l.log_id;
