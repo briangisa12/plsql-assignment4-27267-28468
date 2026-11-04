@@ -61,7 +61,7 @@ run_all.sql                         rebuilds everything in the right order
     f_low_stock_products.sql        also creates the SQL type T_NAME_LIST
 03_tests/
     test_success_cases.sql          S1 – S9
-    test_error_cases.sql            E1 – E18
+    test_error_cases.sql            E1 – E19
     performance_demo.sql            row-by-row vs bulk timing
 screenshots/
 docs/
@@ -153,10 +153,11 @@ sqlplus inventory_app/<password>@localhost:1521/freepdb1 @run_all.sql
 | E16 | `f_find_product_id('Laptop')` | ORA-20014 |
 | E17 | `f_low_stock_products('FURNITURE')` | ORA-20016 |
 | E18 | `SELECT f_stock_value(999) FROM dual` | ORA-20013 shown in SQL, not a silent NULL |
+| E19 | Failed stock OUT, then stock and movements compared before and after | ORA-20004 caught, nothing changed, PASS (proves the ROLLBACK) |
 
 ## 8. Screenshots
 
-- `screenshots/test_success_cases_output_1..3.png` and `screenshots/test_error_cases_output_1..3.png`: the **final, clean run** of both test files, taken right after `run_all.sql`.
+- `screenshots/test_success_cases_output_1..3.png` and `screenshots/test_error_cases_output_1..4.png`: the **final, clean run** of both test files, taken right after `run_all.sql` (`test_error_cases_output_4.png` shows E19).
 - `screenshots/run_all_output.png`: the rebuild, with all objects VALID.
 - `screenshots/01_create_tables_output*.png` and `02_sample_data_output.png`: schema creation.
 - `screenshots/p_*_success.png`, `p_*_errors.png` and `functions_*.png`: taken while each program was developed. Their numbers can differ from the final run because the data had changed between runs.
