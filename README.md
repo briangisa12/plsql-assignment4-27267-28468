@@ -172,4 +172,4 @@ As the assignment requires, we declare that we used an AI assistant, **Claude**,
 - **To draft code.** It proposed the table design and drafts of the procedures, functions and test scripts. We created every file ourselves in SQL Developer, ran it on our own database, and checked the results.
 - **For debugging.** It helped us understand and fix the errors we hit: an empty service name (ORA-12261), duplicate data (ORA-00001), a SQL*Plus line-continuation problem in a `PROMPT` line, and Git and GitHub push issues When Github was down.
 
-**What we did ourselves:** we installed and configured the database and tools, created and ran all scripts, checked every output, took the screenshots, made the Git commits, and reviewed the code so we can explain every line in the presentation.
+**What we did ourselves:** we installed and configured the database and tools, created and ran all scripts, checked every output, took the screenshots, made the Git commits, and reviewed as well as understanding the code so we can explain every line in the presentation.
