@@ -35,3 +35,22 @@ EXCEPTION
     WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
 END;
 /
+
+
+PROMPT ===== E5: Delete a supplier that does not exist - SQL%NOTFOUND (expect ORA-20005) =====
+DECLARE v_rows NUMBER;
+BEGIN
+    p_delete_supplier(999, v_rows);
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/
+
+PROMPT ===== E6: Delete a supplier that still has products - ORA-02292 (expect ORA-20006) =====
+DECLARE v_rows NUMBER;
+BEGIN
+    p_delete_supplier(1, v_rows);
+EXCEPTION
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Caught: ' || SQLERRM);
+END;
+/
